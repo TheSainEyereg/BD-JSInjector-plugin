@@ -6,7 +6,6 @@
  */
 /*@cc_on
 @if (@_jscript)
-	
 	// Offer to self-install for clueless users that try to run this directly.
 	var shell = WScript.CreateObject("WScript.Shell");
 	var fs = new ActiveXObject("Scripting.FileSystemObject");
@@ -39,7 +38,7 @@ module.exports = (() => {
                     "twitter_username":"olejka_top4ik"
                 }
             ],
-            "version":"1.0.1",
+            "version":"1.0.2",
             "description":"Simply load JS to Discord without console.",
             "github":"https://github.com/TheSainEyereg/BD-JSInjector-plugin",
             "github_raw":"https://raw.githubusercontent.com/TheSainEyereg/BD-JSInjector-plugin/master/JSInjector.plugin.js"
