@@ -9,7 +9,7 @@
 	// Offer to self-install for clueless users that try to run this directly.
 	var shell = WScript.CreateObject("WScript.Shell");
 	var fs = new ActiveXObject("Scripting.FileSystemObject");
-	var pathPlugins = shell.ExpandEnvironmentStrings("%APPDATA%\BetterDiscord\plugins");
+	var pathPlugins = shell.ExpandEnvironmentStrings("%APPDATA%/BetterDiscord/plugins");
 	var pathSelf = WScript.ScriptFullName;
 	// Put the user at ease by addressing them in the first person
 	shell.Popup("It looks like you've mistakenly tried to run me directly. \n(Don't do that!)", 0, "I'm a plugin for BetterDiscord", 0x30);
@@ -38,7 +38,7 @@ module.exports = (() => {
                     "twitter_username":"olejka_top4ik"
                 }
             ],
-            "version":"1.0.2",
+            "version":"1.0.3",
             "description":"Simply load JS to Discord without console.",
             "github":"https://github.com/TheSainEyereg/BD-JSInjector-plugin",
             "github_raw":"https://raw.githubusercontent.com/TheSainEyereg/BD-JSInjector-plugin/master/JSInjector.plugin.js"
@@ -48,7 +48,7 @@ module.exports = (() => {
                 "title":"Fixed",
                 "type":"fixed",
                 "items":[
-                    "Broken functions because of \"this\""
+                    "Fixed double-click installation."
                 ]
             },
             {
