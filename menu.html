@@ -1,219 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
-        :root {
-            font-family: Roboto;
-            --status-danger-background: #ED4245;
-            --status-positive-background: #3BA55D;
-            --brand-experiment: #5865F2;
-        }
-/* --------------------------------------------------------- */    
-        :root {
-            --window-background: #282C34;
-            --window-color: #fefefe;
-            --window-misc-background: #333842;
-            --window-misc-color: #414855;
-
-            --header-color: #21252B;
-            --header-height: 16px;
-            --header-padding: 5px;
-            --header: calc(var(--header-height) + var(--header-padding) *2);
-
-            --main-side-color: #21252B;
-            --main-side-width: 33%;
-            --main-editor-padding: 3px;
-
-            --footer-color: var(--header-color);
-            --footer-height: 22px;
-            --footer-padding: 4px;
-            --footer: calc(var(--footer-height) + var(--footer-padding) *2);
-        }
-        #JSI_window {
-            position: absolute;
-            width: 500px;
-            height: 300px;
-            background: var(--window-background);
-            color: var(--window-color);
-            box-shadow: 0 2px 10px 0 #000;
-            z-index: 9999;
-            font-size: 15pt;
-            user-select: none;
-        }
-        #JSI_window ::-webkit-scrollbar {width: 5px; height: 5px;}
-        #JSI_window ::-webkit-scrollbar-track {background: var(--window-misc-background);}
-        #JSI_window ::-webkit-scrollbar-thumb {background: var(--window-misc-color)}
-        #JSI_window .header{
-            position: relative;
-            display: flex;
-            background: var(--header-color);
-            height: var(--header-height);
-            padding: var(--header-padding);
-            font-size: 12pt;
-            cursor: default;
-        }
-        #JSI_window .header .close {
-            position: absolute;
-            right: 0;
-            top: 0;
-            padding: 2px; /*<--Here*/
-            width: 30px;
-            height: calc(100% - (100% - var(--header)) - 2px/*<--There*/ *2); 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #JSI_window .header .close:hover {background: var(--status-danger-background);}
-        #JSI_window .header .close:active {opacity: 0.75;}
-        #JSI_window .main{
-            display: flex;
-            position: relative;
-            height: calc(100% - var(--header) - var(--footer));
-        }
-        #JSI_window .main .side {
-            padding: 5px;
-            background: var(--main-side-color);
-            width: var(--main-side-width);
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-        #JSI_window .main .side .btn{
-            padding: 1px;
-            font-size: 12pt;
-            background: var(--window-misc-color);
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #JSI_window .main .side .btn:hover{background: #4f5766;}
-        #JSI_window .main .side .btn:active{opacity: 0.75;}
-        #JSI_window .main .editor {
-            user-select: text;
-            padding: 3px;
-            width: calc(100% - var(--main-side-width) - 3px*2);
-            height: calc(100% - 3px *2);
-
-        }
-        #JSI_window .main .editor textarea{
-            font-size: small;
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            resize: none;
-            background: var(--window-bakground-color);
-            color: var(--window-color);
-            border: none;
-            outline: none;
-        }
-        #JSI_window .footer {
-            position: relative;
-            display: flex;
-            background: var(--footer-color);
-            height: var(--footer-height);
-            padding: var(--footer-padding);
-            font-size: 14pt;
-        }
-        #JSI_window .footer input {
-            width: var(--main-side-width);
-            padding: 0;
-            resize: none;
-            background: var(--footer-color);
-            color: var(--window-color);
-            border: 1px solid var(--window-misc-color);
-            outline: none;
-        }
-        #JSI_window .footer input:focus {
-            background: var(--window-misc-background);
-        }
-        #JSI_window .footer a {
-            color: var(--window-color);
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            padding: 3px;
-            height: calc(100% - (100% - var(--footer)) - 3px *2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #JSI_window .footer a:hover{background: var(--window-misc-color);}
-        #JSI_window .footer a:active{opacity: 0.75;}
-/* --------------------------------------------------------- */
-    </style>
-
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <script>$(_ => {
-/* --------------------------------------------------------- */
-        let textbox = $('#JSI_window .footer input');
-        let textarea = $('#JSI_window .editor textarea');
-        let list = $('#JSI_window .side');
-        
-        $('#JSI_window .header').on('mousedown', e => {
-            let drag = $('#JSI_window').addClass('drag');
-            height = drag.outerHeight();
-            width = drag.outerWidth();
-            cursor_y = drag.offset().top + height - e.pageY,
-            cursor_x = drag.offset().left + width - e.pageX;
-
-            $('body')
-            .on('mousemove', e => {
-                let itop = e.pageY + cursor_y - height;
-                let ileft = e.pageX + cursor_x - width;
-                if(drag.hasClass('drag')){
-                    drag.offset({top: itop,left: ileft});
-                }
-            })
-            .on('mouseup', e => {
-                drag.removeClass('drag');
-            });
-        });
-
-        $('#JSI_window .header .close').on('click', _ => {menu.close()});
-
-        $('#JSI_window .footer a').on('click', _ => {
-            let script = $('<script type="text/javascript"'+ '><'+'/script>');
-            let button = $(`<div class="btn"></div>`);
-
-            if (textarea.val() == '') {return textarea.focus()};
-            if (textbox.val() == '') {textbox.val(`unnamed-${list.children().length +1}`)};
-		    textbox.val(textbox.val().replace(/\ /g,'-'));
-		    textbox.val(textbox.val().replace(/\\|\/|\.|\,|\:|\;|\"|\'|\`|\#|\$|\&|\_|\+|\*|\=|\||\{|\}|\[|\]|\<|\>|\(|\)|JSI|script/gi,''));
-
-            script.attr('id', `JSIscript_${textbox.val()}`);
-            script.text(textarea.val());
-            button.attr('sid', textbox.val())
-            button.text(textbox.val());
-            textarea.val('');
-            textbox.val('');
-            $('head').append(script);
-            list.append(button);
-
-            button.css('background', 'var(--brand-experiment)'); //--status-danger-background
-            button.text('Executed!');
-            setTimeout(_ => {
-                button.text(button.attr('sid'))
-                button.css('background', '')
-            }, 500)
-
-
-            button.on('click', e => {
-                let btn = $(e.target);
-                let script = $(`#JSIscript_${btn.attr('sid')}`);
-                textarea.val(script.text());
-                btn.css('background', 'var(--status-positive-background)'); //--status-danger-background
-                btn.text('Loaded!');
-                setTimeout(_ => {
-                    btn.text(btn.attr('sid'))
-                    btn.css('background', '')
-                }, 500)
-            })
-        })
-/* --------------------------------------------------------- */
-    }); const menu = {}; menu.close = _ => {$('#JSI_window').remove()};</script>
-
 </head>
 <body>
 <!-- --------------------------------------------------------- -->
@@ -234,5 +21,223 @@
         </div>
     </div>
 <!-- --------------------------------------------------------- -->
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+    :root {
+        font-family: Roboto;
+        --status-danger-background: #ED4245;
+        --status-positive-background: #3BA55D;
+        --brand-experiment: #5865F2;
+    }
+/* --------------------------------------------------------- */    
+    :root {
+        --window-background: #282C34;
+        --window-color: #fefefe;
+        --window-misc-background: #333842;
+        --window-misc-color: #414855;
+
+        --header-color: #21252B;
+        --header-height: 16px;
+        --header-padding: 5px;
+        --header: calc(var(--header-height) + var(--header-padding) *2);
+
+        --main-side-color: #21252B;
+        --main-side-width: 33%;
+        --main-editor-padding: 3px;
+
+        --footer-color: var(--header-color);
+        --footer-height: 22px;
+        --footer-padding: 4px;
+        --footer: calc(var(--footer-height) + var(--footer-padding) *2);
+    }
+    #JSI_window {
+        position: absolute;
+        width: 500px;
+        height: 300px;
+        background: var(--window-background);
+        color: var(--window-color);
+        box-shadow: 0 2px 10px 0 #000;
+        z-index: 9999;
+        font-size: 15pt;
+        user-select: none;
+    }
+    #JSI_window ::-webkit-scrollbar {width: 5px; height: 5px;}
+    #JSI_window ::-webkit-scrollbar-track {background: var(--window-misc-background);}
+    #JSI_window ::-webkit-scrollbar-thumb {background: var(--window-misc-color)}
+    #JSI_window .header{
+        position: relative;
+        display: flex;
+        background: var(--header-color);
+        height: var(--header-height);
+        padding: var(--header-padding);
+        font-size: 12pt;
+        cursor: default;
+    }
+    #JSI_window .header .close {
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: 2px; /*<--Here*/
+        width: 30px;
+        height: calc(100% - (100% - var(--header)) - 2px/*<--There*/ *2); 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #JSI_window .header .close:hover {background: var(--status-danger-background);}
+    #JSI_window .header .close:active {opacity: 0.75;}
+    #JSI_window .main{
+        display: flex;
+        position: relative;
+        height: calc(100% - var(--header) - var(--footer));
+    }
+    #JSI_window .main .side {
+        padding: 5px;
+        background: var(--main-side-color);
+        width: var(--main-side-width);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    #JSI_window .main .side .btn{
+        padding: 1px;
+        font-size: 12pt;
+        background: var(--window-misc-color);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #JSI_window .main .side .btn:hover{background: #4f5766;}
+    #JSI_window .main .side .btn:active{opacity: 0.75;}
+    #JSI_window .main .editor {
+        user-select: text;
+        padding: 3px;
+        width: calc(100% - var(--main-side-width) - 3px*2);
+        height: calc(100% - 3px *2);
+
+    }
+    #JSI_window .main .editor textarea{
+        font-size: small;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        resize: none;
+        background: var(--window-bakground-color);
+        color: var(--window-color);
+        border: none;
+        outline: none;
+    }
+    #JSI_window .footer {
+        position: relative;
+        display: flex;
+        background: var(--footer-color);
+        height: var(--footer-height);
+        padding: var(--footer-padding);
+        font-size: 14pt;
+    }
+    #JSI_window .footer input {
+        width: var(--main-side-width);
+        padding: 0;
+        resize: none;
+        background: var(--footer-color);
+        color: var(--window-color);
+        border: 1px solid var(--window-misc-color);
+        outline: none;
+    }
+    #JSI_window .footer input:focus {
+        background: var(--window-misc-background);
+    }
+    #JSI_window .footer a {
+        color: var(--window-color);
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        padding: 3px;
+        height: calc(100% - (100% - var(--footer)) - 3px *2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #JSI_window .footer a:hover{background: var(--window-misc-color);}
+    #JSI_window .footer a:active{opacity: 0.75;}
+/* --------------------------------------------------------- */
+</style>
+
+<script>
+    /* --------------------------------------------------------- */
+            let textbox = document.querySelector('#JSI_window .footer input');
+            let textarea = document.querySelector('#JSI_window .editor textarea');
+            let list = document.querySelector('#JSI_window .side');
+            
+            let main_window = document.getElementById("JSI_window")
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            document.querySelector(`#${main_window.id} .header`).onmousedown = e => {
+                e.preventDefault();
+                // get the mouse cursor position at startup:
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = e => {
+                    /* stop moving when mouse button is released:*/
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                }
+                // call a function whenever the cursor moves:
+                document.onmousemove = e => {
+                    e.preventDefault();
+                    // calculate the new cursor position:
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    // set the element's new position:
+                    main_window.style.top = (main_window.offsetTop - pos2) + "px";
+                    main_window.style.left = (main_window.offsetLeft - pos1) + "px";
+                }
+            }
+    
+            document.querySelector('#JSI_window .header .close').onclick = _ => {menu.close()};
+    
+            document.querySelector('#JSI_window .footer a').onclick = _ => {
+                let script = document.createElement('script');
+                let button = document.createElement('div'); button.classList.add('btn');
+    
+                if (textarea.value == '') {return textarea.focus()};
+                if (textbox.value == '') {textbox.value = `unnamed-${list.children.length +1}`};
+                textbox.value =textbox.value.replace(/\ /g,'-');
+                textbox.value = textbox.value.replace(/\\|\/|\.|\,|\:|\;|\"|\'|\`|\#|\$|\&|\_|\+|\*|\=|\||\{|\}|\[|\]|\<|\>|\(|\)|JSI|script/gi,'');
+    
+                script.setAttribute('id', `JSIscript_${textbox.value}`);
+                script.innerHTML = textarea.value;
+                button.setAttribute('sid', textbox.value)
+                button.innerText = textbox.value;
+                textarea.value = "";
+                textbox.value = "";
+                document.head.append(script);
+                list.append(button);
+    
+                button.style.background = 'var(--brand-experiment)'; //--status-danger-background
+                button.innerText = 'Executed!';
+                setTimeout(_ => {
+                    button.innerText = button.getAttribute("sid")
+                    button.style.background = ""
+                }, 500)
+    
+    
+                button.onclick = e => {
+                    let btn = e.target;
+                    let script = document.getElementById(`JSIscript_${btn.getAttribute('sid')}`);
+                    textarea.value = script.innerText;
+                    btn.style.background = 'var(--status-positive-background)'; //--status-danger-background
+                    btn.innerText = "Loaded!";
+                    setTimeout(_ => {
+                        btn.innerText = btn.getAttribute('sid')
+                        btn.style.background = ''
+                    }, 500)
+                }
+            }
+    /* --------------------------------------------------------- */
+const menu = {}; menu.close = _ => {document.getElementById('JSI_window').remove()};</script>
+
 </body>
 </html>

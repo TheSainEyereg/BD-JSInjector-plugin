@@ -38,17 +38,17 @@ module.exports = (() => {
                     "twitter_username":"olejka_top4ik"
                 }
             ],
-            "version":"1.0.3",
+            "version":"1.1.0",
             "description":"Simply load JS to Discord without console.",
             "github":"https://github.com/TheSainEyereg/BD-JSInjector-plugin",
             "github_raw":"https://raw.githubusercontent.com/TheSainEyereg/BD-JSInjector-plugin/master/JSInjector.plugin.js"
         },
-        "changelog":[
+        "changelog":[ //Fixes:"fixed", Improvements:"improved", Improvements:"type"
             {
-                "title":"Fixed",
-                "type":"fixed",
+                "title":"Improvements",
+                "type":"improved",
                 "items":[
-                    "Fixed double-click installation."
+                    "Removed jQuery which caused poor performance"
                 ]
             },
             {
@@ -56,7 +56,6 @@ module.exports = (() => {
                 "type":"progress",
                 "items":[
                     "Syntax highlighting.",
-                    "Reject jQuery, use pure JS."
                 ]
             }
         ],
@@ -93,8 +92,8 @@ module.exports = (() => {
         active: false,
         open() {
             this.active = true;
-            if (!$('#JSI_window')[0]) {
-                const menu_html = $(`
+            if (!document.getElementById('JSI_window')) {
+                const menu_html = new DOMParser().parseFromString(`
                 <div id="JSI_window" style="top:30px;left:20px;">
                     <div class="header" id="JSI_window_header">JavaScript Injector
                         <div class="close">✖</div>
@@ -111,9 +110,9 @@ module.exports = (() => {
                         <a>Exec</a>
                     </div>
                 </div>
-                `);
+                `, 'text/html').body.childNodes[0];
         
-                $('body').append(menu_html);
+                document.body.append(menu_html);
         
                 BdApi.injectCSS('JSI_menu', `
                     :root {
@@ -248,94 +247,85 @@ module.exports = (() => {
                     #JSI_window .footer a:active{opacity: 0.75;}
                 `);
                 
-                let textbox = $('#JSI_window .footer input');
-                let textarea = $('#JSI_window .editor textarea');
-                let list = $('#JSI_window .side');
+                let textbox = document.querySelector('#JSI_window .footer input');
+                let textarea = document.querySelector('#JSI_window .editor textarea');
+                let list = document.querySelector('#JSI_window .side');
                 
-                $('#JSI_window .header').on('mousedown', e => {
-                    let drag = $('#JSI_window').addClass('drag');
-                    height = drag.outerHeight();
-                    width = drag.outerWidth();
-                    cursor_y = drag.offset().top + height - e.pageY,
-                    cursor_x = drag.offset().left + width - e.pageX;
+                let main_window = document.getElementById("JSI_window")
+                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                document.querySelector(`#${main_window.id} .header`).onmousedown = e => {
+                    e.preventDefault();
+                    // get the mouse cursor position at startup:
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    document.onmouseup = e => {
+                        /* stop moving when mouse button is released:*/
+                        document.onmouseup = null;
+                        document.onmousemove = null;
+                    }
+                    // call a function whenever the cursor moves:
+                    document.onmousemove = e => {
+                        e.preventDefault();
+                        // calculate the new cursor position:
+                        pos1 = pos3 - e.clientX;
+                        pos2 = pos4 - e.clientY;
+                        pos3 = e.clientX;
+                        pos4 = e.clientY;
+                        // set the element's new position:
+                        main_window.style.top = (main_window.offsetTop - pos2) + "px";
+                        main_window.style.left = (main_window.offsetLeft - pos1) + "px";
+                    }
+                }
         
-                    $('body')
-                    .on('mousemove', e => {
-                        let itop = e.pageY + cursor_y - height;
-                        let ileft = e.pageX + cursor_x - width;
-                        if(drag.hasClass('drag')){
-                            drag.offset({top: itop,left: ileft});
-                        }
-                    })
-                    .on('mouseup', e => {
-                        drag.removeClass('drag');
-                    });
-                });
+                document.querySelector('#JSI_window .header .close').onclick = _ => {menu.close()};
         
-                $('#JSI_window .header .close').on('click', _ => {menu.close()});
+                document.querySelector('#JSI_window .footer a').onclick = _ => {
+                    let script = document.createElement('script');
+                    let button = document.createElement('div'); button.classList.add('btn');
         
-                $('#JSI_window .footer a').on('click', _ => {
-                    let script = $('<script type="text/javascript"'+ '><'+'/script>');
-                    let button = $(`<div class="btn"></div>`);
+                    if (textarea.value == '') {return textarea.focus()};
+                    if (textbox.value == '') {textbox.value = `unnamed-${list.children.length +1}`};
+                    textbox.value =textbox.value.replace(/\ /g,'-');
+                    textbox.value = textbox.value.replace(/\\|\/|\.|\,|\:|\;|\"|\'|\`|\#|\$|\&|\_|\+|\*|\=|\||\{|\}|\[|\]|\<|\>|\(|\)|JSI|script/gi,'');
         
-                    if (textarea.val() == '') {return textarea.focus()};
-                    if (textbox.val() == '') {textbox.val(`unnamed-${list.children().length +1}`)};
-                    textbox.val(textbox.val().replace(/\ /g,'-'));
-                    textbox.val(textbox.val().replace(/\\|\/|\.|\,|\:|\;|\"|\'|\`|\#|\$|\&|\_|\+|\*|\=|\||\{|\}|\[|\]|\<|\>|\(|\)|JSI|script/gi,''));
-        
-                    script.attr('id', `JSIscript_${textbox.val()}`);
-                    script.text(textarea.val());
-                    button.attr('sid', textbox.val())
-                    button.text(textbox.val());
-                    textarea.val('');
-                    textbox.val('');
-                    $('head').append(script);
+                    script.setAttribute('id', `JSIscript_${textbox.value}`);
+                    script.innerHTML = textarea.value;
+                    button.setAttribute('sid', textbox.value)
+                    button.innerText = textbox.value;
+                    textarea.value = "";
+                    textbox.value = "";
+                    document.head.append(script);
                     list.append(button);
         
-                    button.css('background', 'var(--brand-experiment)'); //--status-danger-background
-                    button.text('Executed!');
+                    button.style.background = 'var(--brand-experiment)'; //--status-danger-background
+                    button.innerText = 'Executed!';
                     setTimeout(_ => {
-                        button.text(button.attr('sid'))
-                        button.css('background', '')
+                        button.innerText = button.getAttribute("sid")
+                        button.style.background = ""
                     }, 500)
         
         
-                    button.on('click', e => {
-                        let btn = $(e.target);
-                        let script = $(`#JSIscript_${btn.attr('sid')}`);
-                        textarea.val(script.text());
-                        btn.css('background', 'var(--status-positive-background)'); //--status-danger-background
-                        btn.text('Loaded!');
+                    button.onclick = e => {
+                        let btn = e.target;
+                        let script = document.getElementById(`JSIscript_${btn.getAttribute('sid')}`);
+                        textarea.value = script.innerText;
+                        btn.style.background = 'var(--status-positive-background)'; //--status-danger-background
+                        btn.innerText = "Loaded!";
                         setTimeout(_ => {
-                            btn.text(btn.attr('sid'))
-                            btn.css('background', '')
+                            btn.innerText = btn.getAttribute('sid')
+                            btn.style.background = ''
                         }, 500)
-                    })
-                })
-            } else $('#JSI_window').show();
+                    }
+                }
+            } else document.getElementById('JSI_window').hidden = false;
         },
         close() {
             this.active = false;
-            $('#JSI_window').hide();
+            if (document.getElementById('JSI_window')) {
+                document.getElementById('JSI_window').hidden = true;
+            }
         }
     }
-    
-
-    function __main__() {
-        const title = $('.titleBar-AC4pGV');
-        const button = $(`
-        <div 
-            class="winButtonMinMax-PBQ2gm winButton-iRh8-Z flexCenter-3_1bcw flex-1O1GKY justifyCenter-3D2jYp alignCenter-1dQNNs" 
-            aria-label="OpenJSI" 
-            tabindex="-1" 
-            role="button"
-            id="JSIButton"
-        >JSI</div>
-        `);
-        title.append(button);
-
-        button.on('click', _ => {if (!menu.active) menu.open(); else menu.close()})
-    };
 
 
     return class FakeDeafen extends Plugin {
@@ -344,27 +334,36 @@ module.exports = (() => {
         }
 
         onStart() {
-            Logger.log("Started");
             Patcher.before(Logger, "log", (t, a) => {
                 a[0] = "Patched Message: " + a[0];
             });
+            
+            const title = document.getElementsByClassName('titleBar-AC4pGV')[0];
+            const button = new DOMParser().parseFromString(`
+            <div 
+                class="winButtonMinMax-PBQ2gm winButton-iRh8-Z flexCenter-3_1bcw flex-1O1GKY justifyCenter-3D2jYp alignCenter-1dQNNs" 
+                aria-label="OpenJSI" 
+                tabindex="-1" 
+                role="button"
+                id="JSI_button"
+            >JSI</div>
+            `, 'text/html').body.childNodes[0];
+            title.append(button);
 
-            if (typeof jQuery == 'undefined') {
-                if (!document.getElementById('jquery')) {
-                    BdApi.linkJS('jquery', 'https://code.jquery.com/jquery-3.5.1.min.js');
-                }
-                const jquery_id = document.querySelector('#jquery');
-                jquery_id.addEventListener('load', _ => __main__());
-            } else __main__();
+            button.onclick = _ => {if (!menu.active) menu.open(); else menu.close()}
+            
+            Logger.log("Started");
         }
 
         onStop() {
+            menu.close();
+            if (document.getElementById('JSI_window')) {
+                document.getElementById('JSI_window').remove();
+            }
+            document.getElementById('JSI_button').remove();
+            
             Logger.log("Stopped");
             Patcher.unpatchAll();
-
-            menu.close();
-            $('#JSI_window').remove();
-            $('#JSIButton').remove();
         };
     };
 };
