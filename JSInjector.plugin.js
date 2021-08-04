@@ -38,17 +38,17 @@ module.exports = (() => {
                     "twitter_username":"olejka_top4ik"
                 }
             ],
-            "version":"1.1.0",
+            "version":"1.1.1",
             "description":"Simply load JS to Discord without console.",
             "github":"https://github.com/TheSainEyereg/BD-JSInjector-plugin",
             "github_raw":"https://raw.githubusercontent.com/TheSainEyereg/BD-JSInjector-plugin/master/JSInjector.plugin.js"
         },
-        "changelog":[ //Fixes:"fixed", Improvements:"improved", Improvements:"type"
+        "changelog":[ //Fixes:"fixed", Improvements:"improved", Added:"new", On-going:"progress"
             {
-                "title":"Improvements",
-                "type":"improved",
+                "title":"Fixes",
+                "type":"fixed",
                 "items":[
-                    "Removed jQuery which caused poor performance"
+                    "Fixed shadow position for window."
                 ]
             },
             {
