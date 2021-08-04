@@ -141,7 +141,7 @@ module.exports = (() => {
                         height: 300px;
                         background: var(--window-background);
                         color: var(--window-color);
-                        box-shadow: 0 2px 10px 0 #000;
+                        box-shadow: 0 0 10px 0 #000;
                         z-index: 9999;
                         font-size: 15pt;
                         user-select: none;
